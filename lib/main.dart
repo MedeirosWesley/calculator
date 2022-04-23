@@ -41,56 +41,86 @@ class HomePageState extends State<HomePage> {
   String minDisplay = "";
   bool isdecimal = false;
   String operation = "";
-  String currentNumber = "";
+  String result = "";
   double? n1, n2;
+  bool reset = false;
 
   display(String i) {
     setState(() {
-      if (i == "=") {
-        if (n1 != null && n2 != null) {}
+      if (i == 'C') {
+        clean();
       } else {
-        double? num = double.tryParse(i);
-        if (num != null) {
-          if (mainDisplay == "0") {
-            mainDisplay = i;
-            currentNumber += i;
-          } else {
-            mainDisplay += i;
-            currentNumber += i;
-          }
+        if (i == "=") {
+          n2 = double.parse(mainDisplay);
+          calc(operation);
+          minDisplay = minDisplay + n2.toString();
+          mainDisplay = n1.toString();
+          n2 = 0;
+          result = "";
+          reset = true;
         } else {
-          if (n1 == null) {
-            n1 = double.parse(currentNumber);
-            currentNumber = "";
-            mainDisplay = "0";
+          double? num = double.tryParse(i);
+          if (num != null) {
+            if (mainDisplay == "0") {
+              mainDisplay = i;
+            } else {
+              mainDisplay += i;
+            }
           } else {
-            n2 = double.parse(currentNumber);
-            currentNumber = "";
+            if (i == ".") {
+              mainDisplay = mainDisplay + ".";
+            } else {
+              if (n1 == null) {
+                n1 = double.parse(mainDisplay);
+                operation = i;
+                if (operation == "√") {
+                  calc(operation);
+                  result = n1.toString();
+                  mainDisplay = "0";
+                }
+                minDisplay = mainDisplay + operation;
+                mainDisplay = "0";
+              } else {
+                if (reset) {
+                  operation = i;
+                  minDisplay = n1.toString() + operation;
+                  mainDisplay = "0";
+                  reset = false;
+                } else {
+                  n2 = double.parse(mainDisplay);
+                  calc(operation);
+                  operation = i;
+                  result = n1.toString();
+                  minDisplay = minDisplay + n2.toString() + operation;
+                  mainDisplay = "0";
+                }
+              }
+            }
           }
-          minDisplay = mainDisplay + i;
-          mainDisplay == "0";
-          operation = i;
         }
       }
     });
   }
 
-  calc() {
+  calc(String operation) {
     switch (operation) {
       case "+":
-        minDisplay = calculator.sum(n1!, n2!).toString();
+        n1 = calculator.sum(n1!, n2!);
         break;
       case "-":
-        minDisplay = calculator.sub(n1!, n2!).toString();
+        n1 = calculator.sub(n1!, n2!);
         break;
       case "/":
-        minDisplay = calculator.divide(n1!, n2!).toString();
+        n1 = calculator.divide(n1!, n2!);
         break;
       case "*":
-        minDisplay = calculator.multply(n1!, n2!).toString();
+        n1 = calculator.multply(n1!, n2!);
         break;
       case "%":
-        minDisplay = calculator.percent(n1!, n2!).toString();
+        n1 = calculator.percent(n1!, n2!);
+        break;
+      case "√":
+        n1 = calculator.sqr(n1!);
         break;
       default:
         break;
@@ -101,8 +131,11 @@ class HomePageState extends State<HomePage> {
     setState(() {
       if (mainDisplay == "0") {
         minDisplay = "";
+        result = "";
+        n1 = 0;
+        n2 = 0;
       } else {
-        mainDisplay == "0";
+        mainDisplay = "0";
       }
     });
   }
@@ -126,15 +159,35 @@ class HomePageState extends State<HomePage> {
                       decoration: BoxDecoration(
                           color: secundaryColor,
                           borderRadius: BorderRadius.circular(20)),
-                      child: Text(
-                        minDisplay,
-                        maxLines: 3,
-                        textAlign: TextAlign.right,
-                        style: TextStyle(
-                            decoration: TextDecoration.none,
-                            color: Colors.white.withOpacity(.5),
-                            fontSize: 30,
-                            fontWeight: FontWeight.w400),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              minDisplay,
+                              maxLines: 1,
+                              textAlign: TextAlign.right,
+                              style: TextStyle(
+                                  decoration: TextDecoration.none,
+                                  color: Colors.white.withOpacity(.5),
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                          ),
+                          Expanded(
+                            child: Text(
+                              result,
+                              maxLines: 1,
+                              textAlign: TextAlign.right,
+                              style: TextStyle(
+                                  decoration: TextDecoration.none,
+                                  color: Colors.white.withOpacity(.5),
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                          ),
+                        ],
                       ),
                     )),
                 const Divider(),
@@ -172,7 +225,7 @@ class HomePageState extends State<HomePage> {
                   children: [
                     buildColumn(['C', '7', '4', '1', '+/-'], false),
                     buildColumn(['√', '8', '5', '2', '0'], false),
-                    buildColumn(['%', '9', '6', '3', ','], false),
+                    buildColumn(['%', '9', '6', '3', '.'], false),
                     buildColumn(['/', '*', '-', '+', '='], true)
                   ],
                 )),
