@@ -36,10 +36,8 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
   Calculator calculator = Calculator();
-  int i = 0;
   String mainDisplay = "0";
   String minDisplay = "";
-  bool isdecimal = false;
   String operation = "";
   String result = "";
   double? n1, n2;
@@ -76,7 +74,6 @@ class HomePageState extends State<HomePage> {
                 if (operation == "√") {
                   calc(operation);
                   result = n1.toString();
-                  mainDisplay = "0";
                 }
                 minDisplay = mainDisplay + operation;
                 mainDisplay = "0";
@@ -87,11 +84,16 @@ class HomePageState extends State<HomePage> {
                   mainDisplay = "0";
                   reset = false;
                 } else {
-                  n2 = double.parse(mainDisplay);
-                  calc(operation);
-                  operation = i;
-                  result = n1.toString();
-                  minDisplay = minDisplay + n2.toString() + operation;
+                  if (operation != "√") {
+                    n2 = double.parse(mainDisplay);
+                    calc(operation);
+                    result = n1.toString();
+                    operation = i;
+                    minDisplay = minDisplay + n2.toString() + operation;
+                  } else {
+                    operation = i;
+                    minDisplay = minDisplay + operation;
+                  }
                   mainDisplay = "0";
                 }
               }
@@ -129,14 +131,13 @@ class HomePageState extends State<HomePage> {
 
   clean() {
     setState(() {
-      if (mainDisplay == "0") {
-        minDisplay = "";
-        result = "";
-        n1 = 0;
-        n2 = 0;
-      } else {
-        mainDisplay = "0";
-      }
+      minDisplay = "";
+      mainDisplay = "";
+      result = "";
+      operation = "";
+      n1 = null;
+      n2 = null;
+      reset = false;
     });
   }
 
