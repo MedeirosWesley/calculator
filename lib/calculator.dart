@@ -24,4 +24,8 @@ class Calculator {
   double sqr(double n1) {
     return sqrt(n1);
   }
+
+  double mod(double n1, double n2) {
+    return n1 % n2;
+  }
 }

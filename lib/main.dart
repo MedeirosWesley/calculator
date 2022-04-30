@@ -13,7 +13,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -43,11 +42,13 @@ class HomePageState extends State<HomePage> {
   double? n1, n2, n3;
   bool reset = false;
 
+  // Transforma doble para int para ser exibido no display
   String isInt() {
-    int i = n1!.toInt(); // fazer a conversao de double para int
+    int i = n1!.toInt();
     return i.toString();
   }
 
+  // Controle e logica dos displays
   display(String i) => setState(() {
         switch (i) {
           case 'C':
@@ -61,22 +62,28 @@ class HomePageState extends State<HomePage> {
               calc('%');
               n2 = n3;
               calc(operation);
-              result = n1.toString();
+              result = (n1! % 1 == 0) ? isInt() : n1.toString();
               mainDisplay = "0";
               reset = true;
             }
             break;
           case '=':
-            if (!reset) {
-              n2 = double.parse(mainDisplay);
-              calc(operation);
-              minDisplay =
-                  (operation != '√') ? minDisplay + mainDisplay : minDisplay;
+            if (operation != '') {
+              if (!reset) {
+                n2 = double.parse(mainDisplay);
+                calc(operation);
+                minDisplay =
+                    (operation != '√') ? minDisplay + mainDisplay : minDisplay;
+              }
+              mainDisplay = (n1 == null)
+                  ? '0'
+                  : (n1! % 1 == 0)
+                      ? isInt()
+                      : n1.toString();
+              n2 = 0;
+              result = "";
+              reset = true;
             }
-            mainDisplay = n1.toString();
-            n2 = 0;
-            result = "";
-            reset = true;
             break;
           case '.':
             mainDisplay = mainDisplay + ".";
@@ -89,14 +96,14 @@ class HomePageState extends State<HomePage> {
               } else {
                 mainDisplay += i;
               }
-            } else {
+            } else if (mainDisplay != '0') {
               if (n1 == null) {
                 n1 = double.parse(mainDisplay);
                 operation = i;
                 if (operation == "√") {
                   reset = true;
                   calc(operation);
-                  result = n1.toString();
+                  result = (n1! % 1 == 0) ? isInt() : n1.toString();
                   n2 = 0;
                 }
                 minDisplay = mainDisplay + operation;
@@ -104,14 +111,16 @@ class HomePageState extends State<HomePage> {
               } else {
                 if (reset) {
                   operation = i;
-                  minDisplay = n1.toString() + operation;
+                  minDisplay = (n1! % 1 == 0)
+                      ? isInt() + operation
+                      : n1.toString() + operation;
                   mainDisplay = "0";
                   reset = false;
                 } else {
-                  if (operation != "√") {
+                  if (operation != "√" && mainDisplay != '0') {
                     n2 = double.parse(mainDisplay);
                     calc(operation);
-                    result = n1.toString();
+                    result = (n1! % 1 == 0) ? isInt() : n1.toString();
                     operation = i;
                     minDisplay = minDisplay + mainDisplay + operation;
                   } else {
@@ -119,7 +128,7 @@ class HomePageState extends State<HomePage> {
                     operation = i;
                     minDisplay = minDisplay + operation;
                     calc(operation);
-                    result = n1.toString();
+                    result = (n1! % 1 == 0) ? isInt() : n1.toString();
                     n2 = 0;
                   }
                   mainDisplay = "0";
@@ -129,6 +138,7 @@ class HomePageState extends State<HomePage> {
         }
       });
 
+  // Controle da operações
   calc(String operation) {
     switch (operation) {
       case "+":
@@ -149,11 +159,15 @@ class HomePageState extends State<HomePage> {
       case "√":
         n1 = calculator.sqr(n1!);
         break;
+      case "Mod":
+        n1 = calculator.mod(n1!, n2!);
+        break;
       default:
         break;
     }
   }
 
+  // Reseta a calculadora
   clean() {
     setState(() {
       minDisplay = "";
@@ -165,6 +179,10 @@ class HomePageState extends State<HomePage> {
       reset = false;
     });
   }
+
+////////////////////////////////////////////////////////////////////////////////
+// Layout
+////////////////////////////////////////////////////////////////////////////////
 
   @override
   Widget build(BuildContext context) {
@@ -181,14 +199,14 @@ class HomePageState extends State<HomePage> {
                   Expanded(
                       flex: 4,
                       child: Container(
-                        padding: EdgeInsets.all(8),
+                        padding: const EdgeInsets.all(8),
                         alignment: Alignment.bottomRight,
                         decoration: BoxDecoration(
                             color: secundaryColor,
                             borderRadius: BorderRadius.circular(20)),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             SingleChildScrollView(
                               reverse: true,
@@ -197,33 +215,31 @@ class HomePageState extends State<HomePage> {
                                 minDisplay,
                                 maxLines: 3,
                                 textAlign: TextAlign.right,
-                                style: TextStyle(
+                                style: const TextStyle(
                                     decoration: TextDecoration.none,
                                     color: Colors.white,
                                     fontSize: 40,
                                     fontWeight: FontWeight.w400),
                               ),
                             ),
-                            Expanded(
-                              child: Text(
-                                result,
-                                maxLines: 1,
-                                textAlign: TextAlign.right,
-                                style: TextStyle(
-                                    decoration: TextDecoration.none,
-                                    color: Colors.white.withOpacity(.5),
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.w400),
-                              ),
+                            Text(
+                              result,
+                              maxLines: 1,
+                              textAlign: TextAlign.right,
+                              style: TextStyle(
+                                  decoration: TextDecoration.none,
+                                  color: Colors.white.withOpacity(.5),
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.w400),
                             ),
                           ],
                         ),
                       )),
                   const Divider(),
                   Expanded(
-                      flex: 6,
+                      flex: 5,
                       child: Container(
-                        padding: EdgeInsets.all(8),
+                        padding: const EdgeInsets.all(8),
                         alignment: Alignment.bottomRight,
                         decoration: BoxDecoration(
                             color: secundaryColor,
@@ -234,7 +250,7 @@ class HomePageState extends State<HomePage> {
                             mainDisplay,
                             maxLines: 3,
                             textAlign: TextAlign.right,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 decoration: TextDecoration.none,
                                 color: Colors.white,
                                 fontSize: 40,
@@ -249,13 +265,13 @@ class HomePageState extends State<HomePage> {
             Expanded(
               flex: 3,
               child: Container(
-                  padding: EdgeInsets.all(defaultPadding),
+                  padding: const EdgeInsets.all(defaultPadding),
                   decoration: BoxDecoration(
                       color: secundaryColor,
                       borderRadius: BorderRadius.circular(20)),
                   child: Row(
                     children: [
-                      buildColumn(['C', '7', '4', '1', '+/-'], false),
+                      buildColumn(['C', '7', '4', '1', 'Mod'], false),
                       buildColumn(['√', '8', '5', '2', '0'], false),
                       buildColumn(['%', '9', '6', '3', '.'], false),
                       buildColumn(['/', '*', '-', '+', '='], true)
@@ -268,6 +284,7 @@ class HomePageState extends State<HomePage> {
     );
   }
 
+  //Contrutor de botões
   button(String i, bool? b) {
     Color color;
     Color txtColor;
@@ -282,7 +299,6 @@ class HomePageState extends State<HomePage> {
       padding: const EdgeInsets.all(5.0),
       child: ElevatedButton(
           style: ButtonStyle(
-              animationDuration: Duration(microseconds: 10),
               shape: MaterialStateProperty.all(RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15))),
               backgroundColor: MaterialStateProperty.all<Color>(color)),
@@ -291,12 +307,16 @@ class HomePageState extends State<HomePage> {
           },
           child: Text(
             i,
+            maxLines: 1,
             style: TextStyle(
-                fontSize: 30, color: txtColor, fontWeight: FontWeight.w400),
+                fontSize: (i == 'Mod') ? 20 : 30,
+                color: txtColor,
+                fontWeight: FontWeight.w400),
           )),
     );
   }
 
+  // Constroi o layout dos botões
   buildColumn(List<String> btns, bool b) {
     return Expanded(
         flex: 1,
