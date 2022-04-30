@@ -18,7 +18,7 @@ class Calculator {
   }
 
   double percent(double n1, double n2) {
-    return (n1 / n2) * n2;
+    return (n1 * n2) / 100;
   }
 
   double sqr(double n1) {

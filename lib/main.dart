@@ -40,40 +40,64 @@ class HomePageState extends State<HomePage> {
   String minDisplay = "";
   String operation = "";
   String result = "";
-  double? n1, n2;
+  double? n1, n2, n3;
   bool reset = false;
 
-  display(String i) {
-    setState(() {
-      if (i == 'C') {
-        clean();
-      } else {
-        if (i == "=") {
-          n2 = double.parse(mainDisplay);
-          calc(operation);
-          minDisplay = minDisplay + n2.toString();
-          mainDisplay = n1.toString();
-          n2 = 0;
-          result = "";
-          reset = true;
-        } else {
-          double? num = double.tryParse(i);
-          if (num != null) {
-            if (mainDisplay == "0") {
-              mainDisplay = i;
-            } else {
-              mainDisplay += i;
+  String isInt() {
+    int i = n1!.toInt(); // fazer a conversao de double para int
+    return i.toString();
+  }
+
+  display(String i) => setState(() {
+        switch (i) {
+          case 'C':
+            clean();
+            break;
+          case '%':
+            if (n1 != null) {
+              n2 = double.parse(mainDisplay);
+              minDisplay = minDisplay + mainDisplay + '%';
+              n3 = n1;
+              calc('%');
+              n2 = n3;
+              calc(operation);
+              result = n1.toString();
+              mainDisplay = "0";
+              reset = true;
             }
-          } else {
-            if (i == ".") {
-              mainDisplay = mainDisplay + ".";
+            break;
+          case '=':
+            if (!reset) {
+              n2 = double.parse(mainDisplay);
+              calc(operation);
+              minDisplay =
+                  (operation != '√') ? minDisplay + mainDisplay : minDisplay;
+            }
+            mainDisplay = n1.toString();
+            n2 = 0;
+            result = "";
+            reset = true;
+            break;
+          case '.':
+            mainDisplay = mainDisplay + ".";
+            break;
+          default:
+            double? num = double.tryParse(i);
+            if (num != null) {
+              if (mainDisplay == "0") {
+                mainDisplay = i;
+              } else {
+                mainDisplay += i;
+              }
             } else {
               if (n1 == null) {
                 n1 = double.parse(mainDisplay);
                 operation = i;
                 if (operation == "√") {
+                  reset = true;
                   calc(operation);
                   result = n1.toString();
+                  n2 = 0;
                 }
                 minDisplay = mainDisplay + operation;
                 mainDisplay = "0";
@@ -89,20 +113,21 @@ class HomePageState extends State<HomePage> {
                     calc(operation);
                     result = n1.toString();
                     operation = i;
-                    minDisplay = minDisplay + n2.toString() + operation;
+                    minDisplay = minDisplay + mainDisplay + operation;
                   } else {
+                    reset = true;
                     operation = i;
                     minDisplay = minDisplay + operation;
+                    calc(operation);
+                    result = n1.toString();
+                    n2 = 0;
                   }
                   mainDisplay = "0";
                 }
               }
             }
-          }
         }
-      }
-    });
-  }
+      });
 
   calc(String operation) {
     switch (operation) {
@@ -132,7 +157,7 @@ class HomePageState extends State<HomePage> {
   clean() {
     setState(() {
       minDisplay = "";
-      mainDisplay = "";
+      mainDisplay = "0";
       result = "";
       operation = "";
       n1 = null;
@@ -143,95 +168,102 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: primaryColor,
-      padding: const EdgeInsets.all(defaultPadding),
-      child: Column(
-        children: [
-          Expanded(
-            flex: 2,
-            child: Column(
-              children: [
-                Expanded(
-                    flex: 4,
-                    child: Container(
-                      padding: EdgeInsets.all(8),
-                      alignment: Alignment.bottomRight,
-                      decoration: BoxDecoration(
-                          color: secundaryColor,
-                          borderRadius: BorderRadius.circular(20)),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              minDisplay,
-                              maxLines: 1,
-                              textAlign: TextAlign.right,
-                              style: TextStyle(
-                                  decoration: TextDecoration.none,
-                                  color: Colors.white.withOpacity(.5),
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.w400),
+    return Scaffold(
+      body: Container(
+        color: primaryColor,
+        padding: const EdgeInsets.all(defaultPadding),
+        child: Column(
+          children: [
+            Expanded(
+              flex: 2,
+              child: Column(
+                children: [
+                  Expanded(
+                      flex: 4,
+                      child: Container(
+                        padding: EdgeInsets.all(8),
+                        alignment: Alignment.bottomRight,
+                        decoration: BoxDecoration(
+                            color: secundaryColor,
+                            borderRadius: BorderRadius.circular(20)),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SingleChildScrollView(
+                              reverse: true,
+                              scrollDirection: Axis.horizontal,
+                              child: Text(
+                                minDisplay,
+                                maxLines: 3,
+                                textAlign: TextAlign.right,
+                                style: TextStyle(
+                                    decoration: TextDecoration.none,
+                                    color: Colors.white,
+                                    fontSize: 40,
+                                    fontWeight: FontWeight.w400),
+                              ),
                             ),
-                          ),
-                          Expanded(
-                            child: Text(
-                              result,
-                              maxLines: 1,
-                              textAlign: TextAlign.right,
-                              style: TextStyle(
-                                  decoration: TextDecoration.none,
-                                  color: Colors.white.withOpacity(.5),
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.w400),
+                            Expanded(
+                              child: Text(
+                                result,
+                                maxLines: 1,
+                                textAlign: TextAlign.right,
+                                style: TextStyle(
+                                    decoration: TextDecoration.none,
+                                    color: Colors.white.withOpacity(.5),
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.w400),
+                              ),
                             ),
+                          ],
+                        ),
+                      )),
+                  const Divider(),
+                  Expanded(
+                      flex: 6,
+                      child: Container(
+                        padding: EdgeInsets.all(8),
+                        alignment: Alignment.bottomRight,
+                        decoration: BoxDecoration(
+                            color: secundaryColor,
+                            borderRadius: BorderRadius.circular(20)),
+                        child: FittedBox(
+                          fit: BoxFit.cover,
+                          child: Text(
+                            mainDisplay,
+                            maxLines: 3,
+                            textAlign: TextAlign.right,
+                            style: TextStyle(
+                                decoration: TextDecoration.none,
+                                color: Colors.white,
+                                fontSize: 40,
+                                fontWeight: FontWeight.w400),
                           ),
-                        ],
-                      ),
-                    )),
-                const Divider(),
-                Expanded(
-                    flex: 6,
-                    child: Container(
-                      padding: EdgeInsets.all(8),
-                      alignment: Alignment.bottomRight,
-                      decoration: BoxDecoration(
-                          color: secundaryColor,
-                          borderRadius: BorderRadius.circular(20)),
-                      child: Text(
-                        mainDisplay,
-                        maxLines: 3,
-                        textAlign: TextAlign.right,
-                        style: TextStyle(
-                            decoration: TextDecoration.none,
-                            color: Colors.white,
-                            fontSize: 40,
-                            fontWeight: FontWeight.w400),
-                      ),
-                    )),
-              ],
+                        ),
+                      )),
+                ],
+              ),
             ),
-          ),
-          const Divider(),
-          Expanded(
-            flex: 3,
-            child: Container(
-                padding: EdgeInsets.all(defaultPadding),
-                decoration: BoxDecoration(
-                    color: secundaryColor,
-                    borderRadius: BorderRadius.circular(20)),
-                child: Row(
-                  children: [
-                    buildColumn(['C', '7', '4', '1', '+/-'], false),
-                    buildColumn(['√', '8', '5', '2', '0'], false),
-                    buildColumn(['%', '9', '6', '3', '.'], false),
-                    buildColumn(['/', '*', '-', '+', '='], true)
-                  ],
-                )),
-          ),
-        ],
+            const Divider(),
+            Expanded(
+              flex: 3,
+              child: Container(
+                  padding: EdgeInsets.all(defaultPadding),
+                  decoration: BoxDecoration(
+                      color: secundaryColor,
+                      borderRadius: BorderRadius.circular(20)),
+                  child: Row(
+                    children: [
+                      buildColumn(['C', '7', '4', '1', '+/-'], false),
+                      buildColumn(['√', '8', '5', '2', '0'], false),
+                      buildColumn(['%', '9', '6', '3', '.'], false),
+                      buildColumn(['/', '*', '-', '+', '='], true)
+                    ],
+                  )),
+            ),
+          ],
+        ),
       ),
     );
   }
