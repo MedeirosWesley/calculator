@@ -297,11 +297,10 @@ class HomePageState extends State<HomePage> {
     }
     return Padding(
       padding: const EdgeInsets.all(5.0),
-      child: ElevatedButton(
-          style: ButtonStyle(
-              shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15))),
-              backgroundColor: MaterialStateProperty.all<Color>(color)),
+      child: MaterialButton(
+          color: color,
+          shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(15))),
           onPressed: () {
             display(i);
           },
