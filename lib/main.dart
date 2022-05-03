@@ -23,7 +23,53 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const Converter(),
+      home: HomePage(),
+    );
+  }
+}
+
+class HomePage extends StatefulWidget {
+  HomePage({Key? key}) : super(key: key);
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int _selectedIndex = 0;
+  PageController pageController = PageController();
+
+  void onTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    pageController.jumpToPage(index);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: PageView(
+          controller: pageController, children: [CalculatorTab(), Converter()]),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: backgroundColor,
+        items: [
+          BottomNavigationBarItem(
+              icon: Icon(
+                Icons.calculate_rounded,
+              ),
+              label: "Calculadora"),
+          BottomNavigationBarItem(
+              icon: Icon(
+                Icons.compare_arrows_rounded,
+              ),
+              label: "Conversor")
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.grey,
+        onTap: onTapped,
+      ),
     );
   }
 }

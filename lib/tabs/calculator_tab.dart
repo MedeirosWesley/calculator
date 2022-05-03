@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import '../calculator.dart';
 import '../consts.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class CalculatorTab extends StatefulWidget {
+  const CalculatorTab({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => HomePageState();
+  State<CalculatorTab> createState() => CalculatorTabState();
 }
 
-class HomePageState extends State<HomePage> {
+class CalculatorTabState extends State<CalculatorTab> {
   Calculator calculator = Calculator();
   String mainDisplay = "0";
   String minDisplay = "";
@@ -37,7 +37,8 @@ class HomePageState extends State<HomePage> {
               minDisplay = minDisplay + mainDisplay + '%';
               n3 = n1;
               calc('%');
-              n2 = n3;
+              n2 = n1;
+              n1 = n3;
               calc(operation);
               result = (n1! % 1 == 0) ? isInt() : n1.toString();
               mainDisplay = "0";
@@ -163,100 +164,98 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        color: primaryColor,
-        padding: const EdgeInsets.all(defaultPadding),
-        child: Column(
-          children: [
-            Expanded(
-              flex: 2,
-              child: Column(
-                children: [
-                  Expanded(
-                      flex: 4,
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        alignment: Alignment.bottomRight,
-                        decoration: BoxDecoration(
-                            color: secundaryColor,
-                            borderRadius: BorderRadius.circular(20)),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            SingleChildScrollView(
-                              reverse: true,
-                              scrollDirection: Axis.horizontal,
-                              child: Text(
-                                minDisplay,
-                                maxLines: 3,
-                                textAlign: TextAlign.right,
-                                style: const TextStyle(
-                                    decoration: TextDecoration.none,
-                                    color: Colors.white,
-                                    fontSize: 40,
-                                    fontWeight: FontWeight.w400),
-                              ),
-                            ),
-                            Text(
-                              result,
-                              maxLines: 1,
+    return Container(
+      color: backgroundColor,
+      padding: const EdgeInsets.all(defaultPadding),
+      child: Column(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Column(
+              children: [
+                Expanded(
+                    flex: 4,
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      alignment: Alignment.bottomRight,
+                      decoration: BoxDecoration(
+                          color: secundaryColor,
+                          borderRadius: BorderRadius.circular(20)),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          SingleChildScrollView(
+                            reverse: true,
+                            scrollDirection: Axis.horizontal,
+                            child: Text(
+                              minDisplay,
+                              maxLines: 3,
                               textAlign: TextAlign.right,
-                              style: TextStyle(
+                              style: const TextStyle(
                                   decoration: TextDecoration.none,
-                                  color: Colors.white.withOpacity(.5),
-                                  fontSize: 30,
+                                  color: Colors.white,
+                                  fontSize: 40,
                                   fontWeight: FontWeight.w400),
                             ),
-                          ],
-                        ),
-                      )),
-                  const Divider(),
-                  Expanded(
-                      flex: 5,
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        alignment: Alignment.bottomRight,
-                        decoration: BoxDecoration(
-                            color: secundaryColor,
-                            borderRadius: BorderRadius.circular(20)),
-                        child: FittedBox(
-                          fit: BoxFit.cover,
-                          child: Text(
-                            mainDisplay,
-                            maxLines: 3,
+                          ),
+                          Text(
+                            result,
+                            maxLines: 1,
                             textAlign: TextAlign.right,
-                            style: const TextStyle(
+                            style: TextStyle(
                                 decoration: TextDecoration.none,
-                                color: Colors.white,
-                                fontSize: 40,
+                                color: Colors.white.withOpacity(.5),
+                                fontSize: 30,
                                 fontWeight: FontWeight.w400),
                           ),
+                        ],
+                      ),
+                    )),
+                const Divider(),
+                Expanded(
+                    flex: 5,
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      alignment: Alignment.bottomRight,
+                      decoration: BoxDecoration(
+                          color: secundaryColor,
+                          borderRadius: BorderRadius.circular(20)),
+                      child: FittedBox(
+                        fit: BoxFit.cover,
+                        child: Text(
+                          mainDisplay,
+                          maxLines: 3,
+                          textAlign: TextAlign.right,
+                          style: const TextStyle(
+                              decoration: TextDecoration.none,
+                              color: Colors.white,
+                              fontSize: 40,
+                              fontWeight: FontWeight.w400),
                         ),
-                      )),
-                ],
-              ),
+                      ),
+                    )),
+              ],
             ),
-            const Divider(),
-            Expanded(
-              flex: 3,
-              child: Container(
-                  padding: const EdgeInsets.all(defaultPadding),
-                  decoration: BoxDecoration(
-                      color: secundaryColor,
-                      borderRadius: BorderRadius.circular(20)),
-                  child: Row(
-                    children: [
-                      buildColumn(['C', '7', '4', '1', 'Mod'], false),
-                      buildColumn(['√', '8', '5', '2', '0'], false),
-                      buildColumn(['%', '9', '6', '3', '.'], false),
-                      buildColumn(['/', '*', '-', '+', '='], true)
-                    ],
-                  )),
-            ),
-          ],
-        ),
+          ),
+          const Divider(),
+          Expanded(
+            flex: 3,
+            child: Container(
+                padding: const EdgeInsets.all(defaultPadding),
+                decoration: BoxDecoration(
+                    color: secundaryColor,
+                    borderRadius: BorderRadius.circular(20)),
+                child: Row(
+                  children: [
+                    buildColumn(['C', '7', '4', '1', 'Mod'], false),
+                    buildColumn(['√', '8', '5', '2', '0'], false),
+                    buildColumn(['%', '9', '6', '3', '.'], false),
+                    buildColumn(['/', '*', '-', '+', '='], true)
+                  ],
+                )),
+          ),
+        ],
       ),
     );
   }

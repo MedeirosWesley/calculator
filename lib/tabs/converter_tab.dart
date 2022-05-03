@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:calculator/consts.dart';
 import 'package:flutter/material.dart';
 
@@ -9,6 +11,10 @@ class Converter extends StatelessWidget {
     final decimalController = TextEditingController();
     final binaryController = TextEditingController();
     final hexdecimalController = TextEditingController();
+    var height = MediaQuery.of(context).size.height;
+    var width = MediaQuery.of(context).size.width;
+
+    void _binvalidator(String text) {}
 
     void _decimalChange(String text) {
       int value;
@@ -43,39 +49,55 @@ class Converter extends StatelessWidget {
       binaryController.text = num.toRadixString(2);
     }
 
-    return Scaffold(
-      backgroundColor: backgroundColor,
-      body: Center(
-        child: SingleChildScrollView(
-          child: Container(
+    return Container(
+      color: backgroundColor,
+      child: SingleChildScrollView(
+        child: Column(children: [
+          Container(
+              height: height / 4,
+              width: width,
+              child: Container(
+                  padding: EdgeInsets.all(15),
+                  child: Row(
+                    children: [
+                      const Text(
+                        "Conversor",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 50,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(
+                        width: 15,
+                      ),
+                      Image.asset('images/binaryIcon.png'),
+                    ],
+                  ))),
+          Container(
             margin: EdgeInsets.all(15),
             padding: EdgeInsets.all(15),
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-                color: secundaryColor, borderRadius: BorderRadius.circular(20)),
-            child: Center(
-              child: Column(
-                children: [
-                  buildTextFild(
-                      "Decimal", "123", decimalController, _decimalChange),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  buildTextFild(
-                      "Binário", "1111011", binaryController, _binaryChange),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  buildTextFild("Hexadecimal", "7b", hexdecimalController,
-                      _hexdecimalChange),
-                  const SizedBox(
-                    height: 30,
-                  ),
-                ],
-              ),
+            alignment: Alignment.centerLeft,
+            child: Column(
+              children: [
+                buildTextFild(
+                    "Decimal", "123", decimalController, _decimalChange),
+                const SizedBox(
+                  height: 20,
+                ),
+                buildTextFild(
+                    "Binário", "1111011", binaryController, _binaryChange),
+                const SizedBox(
+                  height: 20,
+                ),
+                buildTextFild("Hexadecimal", "7b", hexdecimalController,
+                    _hexdecimalChange),
+                const SizedBox(
+                  height: 30,
+                ),
+              ],
             ),
           ),
-        ),
+        ]),
       ),
     );
   }
